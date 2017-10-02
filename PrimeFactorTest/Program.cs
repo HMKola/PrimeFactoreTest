@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace PrimeFactorTest
 {
@@ -10,113 +9,66 @@ namespace PrimeFactorTest
     {
         static void Main(string[] args)
         {
-
-            Console.WriteLine(SumOfSequence(0, 10).Sum());
+            var data = GetPrimeFactorOutPut(1, 10);
+            Console.WriteLine(data.Sum());
             Console.ReadLine();
 
         }
-        private static List<int> data = new List<int>();
-
-        private static IEnumerable<int> SumOfSequence(int startRange, int endRange)
+        private static IEnumerable<int> GetPrimeFactorOutPut(int start, int end)
         {
-            for (int i = startRange + 1; i <= endRange; i++)
+            var rangeData = ParallelEnumerable.Range(start, end);
+            var outputData = new List<int>();
+            foreach (var number in rangeData)
             {
-                data = new List<int>();
-                data.Add(i);
-                var series = getPrimesMultiplyPrimes(i);
+                outputData = new List<int>();
+                outputData.Add(number);
+                var series = RecursiveCall(number, outputData);
                 yield return series.Count();
+
             }
         }
 
-        private static IEnumerable<int> getPrimesMultiplyPrimes(int numbers)
+        private static IEnumerable<int> GetPrimesWithParellel(int InputData)
+        {
+            int loop = (int)Math.Sqrt(InputData);
+            int first = ParallelEnumerable.Range(2, loop)
+                .Where(x => ParallelEnumerable.Range(2, x - 2).All(y => x % y != 0))
+                .FirstOrDefault(x => InputData % x == 0);
+            var data = first == 0 || first == InputData ?
+                       new[] { InputData } :
+                       new[] { first }.Concat(GetPrimesWithParellel(InputData / first));
+            return data;
+        }
+
+        private static IEnumerable<int> RecursiveCall(int numbers, List<int> OutputData)
         {
             if (numbers > 0)
             {
-                var getPrimeNumber = GetPrimeFactors(numbers, new PrimeNumberCheck());
-                var mupltiplydata = getPrimeNumber.Sum() * getPrimeNumber.Count();
-                if (!data.Contains(mupltiplydata))
+                var primeFactors = GetPrimesWithParellel(numbers);
+                var primeCalc = primeFactors.Count() > 1 ? primeFactors.Sum() * primeFactors.Count() : numbers == 1 ? 0 : 1;
+                if (!OutputData.Contains(primeCalc))
                 {
-
-                    data.Add(mupltiplydata);
-                    getPrimesMultiplyPrimes(mupltiplydata);
-                }
-            }
-            return data;
-
-        }
-
-        private static IEnumerable<int> GetPrimeFactors(int value, PrimeNumberCheck IsprimeNumbers)
-        {
-            List<int> factors = new List<int>();
-
-            foreach (int prime in IsprimeNumbers)
-            {
-                while (value % prime == 0)
-                {
-                    value /= prime;
-                    factors.Add(prime);
+                    if (primeFactors.Count() == 1)
+                    {
+                        if (numbers == 1)
+                        {
+                            OutputData.Add(primeCalc);
+                            RecursiveCall(primeCalc, OutputData);
+                        }
+                        OutputData[0] = 1;
+                    }
+                    else
+                    {
+                        OutputData.Add(primeCalc);
+                        RecursiveCall(primeCalc, OutputData);
+                    }
                 }
 
-                if (value == 1)
-                    break;
             }
+            return OutputData;
 
-            return factors;
         }
-
     }
 
-    public class PrimeNumberCheck : IEnumerable<int>
-    {
-        private static List<int> _primes = new List<int>();
-        private int _lastChecked;
 
-
-        public PrimeNumberCheck()
-        {
-            _primes.Add(2);
-            _lastChecked = 2;
-        }
-
-
-        private bool IsPrime(int checkValue)
-        {
-            bool isPrime = true;
-
-            foreach (int prime in _primes)
-            {
-                if ((checkValue % prime) == 0 && prime <= Math.Sqrt(checkValue))
-                {
-                    isPrime = false;
-                    break;
-                }
-            }
-
-            return isPrime;
-        }
-
-
-        public IEnumerator<int> GetEnumerator()
-        {
-            foreach (int prime in _primes)
-                yield return prime;
-
-            while (_lastChecked < int.MaxValue)
-            {
-                _lastChecked++;
-
-                if (IsPrime(_lastChecked))
-                {
-                    _primes.Add(_lastChecked);
-                    yield return _lastChecked;
-                }
-            }
-        }
-
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
 }

@@ -7,3 +7,6 @@ E:\New folder\PrimeFactorTest\PrimeFactorTest\obj\Debug\PrimeFactorTest.pdb
 E:\New folder\IndianicPrimeTest\PrimeFactorTest\bin\Debug\PrimeFactorTest.exe.config
 E:\New folder\IndianicPrimeTest\PrimeFactorTest\obj\Debug\PrimeFactorTest.exe
 E:\New folder\IndianicPrimeTest\PrimeFactorTest\obj\Debug\PrimeFactorTest.pdb
+E:\New folder\IndianicPrimeTest\PrimeFactorTest\bin\Debug\PrimeFactorTest.exe
+E:\New folder\IndianicPrimeTest\PrimeFactorTest\bin\Debug\PrimeFactorTest.pdb
+E:\New folder\IndianicPrimeTest\PrimeFactorTest\obj\Debug\PrimeFactorTest.csprojResolveAssemblyReference.cache
